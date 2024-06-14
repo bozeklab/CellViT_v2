@@ -7,6 +7,7 @@ logging:
   - Fold-1
   - ViT256
   wandb_dir: ./CellViT/results/PanNuke
+  log_dir: ./results/PanNuke/ViT256
   level: Debug
   group: CellViT256
 random_seed: 19
