@@ -13,7 +13,7 @@ random_seed: 19
 gpu: 0
 data:
   dataset: PanNuke
-  dataset_path: ./PanNuke/digitalhistologyhub
+  dataset_path: /data/pwojcik/SimMIM/pannuke
   train_folds:
   - 0
   val_folds:
@@ -24,7 +24,7 @@ data:
   num_tissue_classes: 19
 model:
   backbone: ViT256
-  pretrained_encoder: ./models/pretrained/ViT-256/vit256_small_dino.pth
+  pretrained_encoder: /data/pwojcik/CellViT/models/pretrained/ViT-256/vit256_small_dino.pth
   shared_skip_connections: true
 loss:
   nuclei_binary_map:
