@@ -59,7 +59,7 @@ data:
 model:
   ema_decay: 0.996
   backbone: SimViT
-  pretrained_encoder: /data/pwojcik/SimMIM/TCGA_256/checkpoint-19.pth # Adapt to your path
+  pretrained_encoder: /data/pwojcik/SimMIM/TCGA_256/checkpoint-latest.pth # Adapt to your path
   shared_skip_connections: true
 
 loss:
