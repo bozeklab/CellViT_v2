@@ -56,6 +56,7 @@ from models.segmentation.cell_segmentation.cellvit import (
     CellViT,
     CellViTSAM,
     CellViT256,
+    SIMCellViT
 )
 from models.segmentation.cell_segmentation.cellvit_shared import (
     CellViTShared,
