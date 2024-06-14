@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from cell_segmentation.utils.post_proc import DetectionCellPostProcessor
+from cell_segmentation.utils.post_proc_cellvit import DetectionCellPostProcessor
 from models.encoders.VIT.sim_vit import SIMVisionTransformer, unetr_vit_base_patch16
 
 
