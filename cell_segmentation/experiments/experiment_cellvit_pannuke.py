@@ -556,7 +556,7 @@ class ExperimentCellVitPanNuke(BaseExperiment):
         self.seed_run(self.default_conf["random_seed"])
 
         # check for backbones
-        implemented_backbones = ["default", "vit256", "sam-b", "sam-l", "sam-h"]
+        implemented_backbones = ["default", "simvit", "vit256", "sam-b", "sam-l", "sam-h"]
         if backbone_type.lower() not in implemented_backbones:
             raise NotImplementedError(
                 f"Unknown Backbone Type - Currently supported are: {implemented_backbones}"
@@ -611,6 +611,34 @@ class ExperimentCellVitPanNuke(BaseExperiment):
                 self.logger.info(model.load_state_dict(cellvit_pretrained, strict=True))
             model.freeze_encoder()
             self.logger.info("Loaded CellVit256 model")
+        if backbone_type == "SimViT":
+            model_class = SIMCellViT
+            model = model_class(
+                model_sim_path=pretrained_encoder,
+                embed_dim=self.run_conf["model"].get("embed_dim", 768),
+                depth=self.run_conf["model"].get("depth", 12),
+                input_channels=self.run_conf["model"].get("input_channels", 3),
+                num_nuclei_classes=self.run_conf["data"]["num_nuclei_classes"],
+                num_tissue_classes=self.run_conf["data"]["num_tissue_classes"],
+                drop_rate=self.run_conf["training"].get("drop_rate", 0),
+                attn_drop_rate=self.run_conf["training"].get("attn_drop_rate", 0),
+                drop_path_rate=self.run_conf["training"].get("drop_path_rate", 0),
+            )
+            model.load_pretrained_encoder(model.model_sim_path)
+            if pretrained_model is not None:
+                self.logger.info(
+                    f"Loading pretrained SIMCellViT model from path: {pretrained_model}"
+                )
+                cellvit_pretrained = torch.load(pretrained_model, map_location="cpu")
+                self.logger.info(model.load_state_dict(cellvit_pretrained, strict=True))
+            pretrained_trunk_path = self.run_conf["model"].get("pretrained_trunk", None)
+            if pretrained_trunk_path is not None:
+                self.logger.info(
+                    f"Loading trunk CellViT model from path: {pretrained_trunk_path}"
+                )
+                model.load_pretrained_trunk(trunk_path=pretrained_trunk_path)
+            model.freeze_encoder()
+            self.logger.info("Loaded SIMCellViT model")
         if backbone_type.lower() in ["sam-b", "sam-l", "sam-h"]:
             if shared_decoders:
                 model_class = CellViTSAMShared
