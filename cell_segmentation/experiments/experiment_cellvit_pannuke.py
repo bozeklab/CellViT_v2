@@ -55,8 +55,7 @@ from cell_segmentation.trainer.trainer_cellvit import CellViTTrainer
 from models.segmentation.cell_segmentation.cellvit import (
     CellViT,
     CellViTSAM,
-    CellViT256,
-    SIMCellViT
+    CellViT256
 )
 from models.segmentation.cell_segmentation.cellvit_sim import SIMCellViT
 from models.segmentation.cell_segmentation.cellvit_shared import (
