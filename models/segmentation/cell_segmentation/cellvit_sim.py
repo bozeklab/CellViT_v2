@@ -11,7 +11,7 @@ from .utils import Conv2DBlock, Deconv2DBlock
 
 from cell_segmentation.utils.post_proc_cellvit import DetectionCellPostProcessor
 from models.encoders.VIT.sim_vit import SIMVisionTransformer, unetr_vit_base_patch16
-from cell_segmentation.cellvit import CellViT
+from .cellvit import CellViT
 
 
 def interpolate_pos_embed(model, checkpoint_model):
