@@ -432,11 +432,11 @@ class SIMCellViT(nn.Module):
         """Convert instance map (binary) to nuclei type instance map
 
         Args:
-            instance_maps (torch.Tensor): Binary instance map, each instance has own integer. Shape: (batch_size, H, W)
-            type_preds (List[dict]): List (len=batch_size) of dictionary with instance type information (compare post_process_hovernet function for more details)
+            instance_maps (torch.Tensor): Binary instance map, each instance has own integer. Shape: (B, H, W)
+            type_preds (List[dict]): List (len=B) of dictionary with instance type information (compare post_process_hovernet function for more details)
 
         Returns:
-            torch.Tensor: Nuclei type instance map. Shape: (batch_size, H, W, self.num_nuclei_classes)
+            torch.Tensor: Nuclei type instance map. Shape: (B, self.num_nuclei_classes, H, W)
         """
         batch_size, h, w = instance_maps.shape
         instance_type_nuclei_maps = torch.zeros(
@@ -454,7 +454,8 @@ class SIMCellViT(nn.Module):
 
             instance_type_nuclei_maps[i, :, :, :] = instance_type_nuclei_map
 
-        return instance_type_nuclei_maps
+        instance_type_nuclei_maps = instance_type_nuclei_maps.permute(0, 3, 1, 2)
+        return torch.Tensor(instance_type_nuclei_maps)nstance_type_nuclei_maps
 
     def freeze_encoder(self):
         """Freeze encoder to not train it"""
