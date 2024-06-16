@@ -38,7 +38,7 @@ def interpolate_pos_embed(model, checkpoint_model):
             checkpoint_model['pos_embed'] = new_pos_embed
 
 
-class SIMCellViT(CellViT):
+class SIMCellViT(nn.Module):
     """CellViT Modell for cell segmentation. U-Net like network with vision transformer as backbone encoder
 
     Skip connections are shared between branches
