@@ -391,32 +391,43 @@ class SIMCellViT(nn.Module):
 
         Args:
             predictions (dict): Dictionary with the following required keys:
-                * nuclei_binary_map: Binary Nucleus Predictions. Shape: (batch_size, H, W, 2)
-                * nuclei_type_map: Type prediction of nuclei. Shape: (batch_size, H, W, 6)
-                * hv_map: Horizontal-Vertical nuclei mapping. Shape: (batch_size, H, W, 2)
+                * nuclei_binary_map: Binary Nucleus Predictions. Shape: (B, 2, H, W)
+                * nuclei_type_map: Type prediction of nuclei. Shape: (B, self.num_nuclei_classes, H, W)
+                * hv_map: Horizontal-Vertical nuclei mapping. Shape: (B, 2, H, W)
             magnification (Literal[20, 40], optional): Which magnification the data has. Defaults to 40.
 
         Returns:
             Tuple[torch.Tensor, List[dict]]:
-                * torch.Tensor: Instance map. Each Instance has own integer. Shape: (batch_size, H, W)
+                * torch.Tensor: Instance map. Each Instance has own integer. Shape: (B, H, W)
                 * List of dictionaries. Each List entry is one image. Each dict contains another dict for each detected nucleus.
                     For each nucleus, the following information are returned: "bbox", "centroid", "contour", "type_prob", "type"
         """
+        # reshape to B, H, W, C
+        predictions_ = predictions.copy()
+        predictions_["nuclei_type_map"] = predictions_["nuclei_type_map"].permute(
+            0, 2, 3, 1
+        )
+        predictions_["nuclei_binary_map"] = predictions_["nuclei_binary_map"].permute(
+            0, 2, 3, 1
+        )
+        predictions_["hv_map"] = predictions_["hv_map"].permute(0, 2, 3, 1)
+
         cell_post_processor = DetectionCellPostProcessor(
             nr_types=self.num_nuclei_classes, magnification=magnification, gt=False
         )
         instance_preds = []
         type_preds = []
-        for i in range(predictions["nuclei_binary_map"].shape[0]):
+
+        for i in range(predictions_["nuclei_binary_map"].shape[0]):
             pred_map = np.concatenate(
                 [
-                    torch.argmax(predictions["nuclei_type_map"], dim=-1)[i]
+                    torch.argmax(predictions_["nuclei_type_map"], dim=-1)[i]
                     .detach()
                     .cpu()[..., None],
-                    torch.argmax(predictions["nuclei_binary_map"], dim=-1)[i]
+                    torch.argmax(predictions_["nuclei_binary_map"], dim=-1)[i]
                     .detach()
                     .cpu()[..., None],
-                    predictions["hv_map"][i].detach().cpu(),
+                    predictions_["hv_map"][i].detach().cpu(),
                 ],
                 axis=-1,
             )
@@ -425,7 +436,6 @@ class SIMCellViT(nn.Module):
             type_preds.append(instance_pred[1])
 
         return torch.Tensor(np.stack(instance_preds)), type_preds
-
     def generate_instance_nuclei_map(
         self, instance_maps: torch.Tensor, type_preds: List[dict]
     ) -> torch.Tensor:
