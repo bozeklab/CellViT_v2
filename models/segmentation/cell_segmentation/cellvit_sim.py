@@ -455,7 +455,7 @@ class SIMCellViT(nn.Module):
             instance_type_nuclei_maps[i, :, :, :] = instance_type_nuclei_map
 
         instance_type_nuclei_maps = instance_type_nuclei_maps.permute(0, 3, 1, 2)
-        return torch.Tensor(instance_type_nuclei_maps)nstance_type_nuclei_maps
+        return torch.Tensor(instance_type_nuclei_maps)
 
     def freeze_encoder(self):
         """Freeze encoder to not train it"""
