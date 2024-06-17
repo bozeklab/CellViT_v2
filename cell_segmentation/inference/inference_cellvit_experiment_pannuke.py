@@ -198,7 +198,7 @@ class InferenceCellViT:
         elif model_type == "SIMCellViT":
             model_class = SIMCellViT
             model = model_class(
-                model_sim_path=pretrained_encoder,
+                model_sim_path=self.run_conf["model"]["pretrained_encoder"],
                 embed_dim=self.run_conf["model"].get("embed_dim", 768),
                 depth=self.run_conf["model"].get("depth", 12),
                 input_channels=self.run_conf["model"].get("input_channels", 3),
