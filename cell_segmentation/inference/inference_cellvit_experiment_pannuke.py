@@ -59,6 +59,7 @@ from models.segmentation.cell_segmentation.cellvit import (
     CellViT256,
     CellViTSAM,
 )
+from models.segmentation.cell_segmentation.cellvit_sim import SIMCellViT
 from models.segmentation.cell_segmentation.cellvit_shared import (
     CellViT256Shared,
     CellViTSAMShared,
@@ -173,6 +174,7 @@ class InferenceCellViT:
             "CellViT256Shared",
             "CellViTSAM",
             "CellViTSAMShared",
+            "SIMCellViT"
         ]
         if model_type not in implemented_models:
             raise NotImplementedError(
@@ -193,7 +195,19 @@ class InferenceCellViT:
                 extract_layers=self.run_conf["model"]["extract_layers"],
                 regression_loss=self.run_conf["model"].get("regression_loss", False),
             )
-
+        elif model_type == "SIMCellViT":
+            model_class = SIMCellViT
+            model = model_class(
+                model_sim_path=pretrained_encoder,
+                embed_dim=self.run_conf["model"].get("embed_dim", 768),
+                depth=self.run_conf["model"].get("depth", 12),
+                input_channels=self.run_conf["model"].get("input_channels", 3),
+                num_nuclei_classes=self.run_conf["data"]["num_nuclei_classes"],
+                num_tissue_classes=self.run_conf["data"]["num_tissue_classes"],
+                drop_rate=self.run_conf["training"].get("drop_rate", 0),
+                attn_drop_rate=self.run_conf["training"].get("attn_drop_rate", 0),
+                drop_path_rate=self.run_conf["training"].get("drop_path_rate", 0),
+            )
         elif model_type in ["CellViT256", "CellViT256Shared"]:
             if model_type == "CellViT256":
                 model_class = CellViT256

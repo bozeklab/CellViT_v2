@@ -436,6 +436,7 @@ class SIMCellViT(nn.Module):
             type_preds.append(instance_pred[1])
 
         return torch.Tensor(np.stack(instance_preds)), type_preds
+
     def generate_instance_nuclei_map(
         self, instance_maps: torch.Tensor, type_preds: List[dict]
     ) -> torch.Tensor:
